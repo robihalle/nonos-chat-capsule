@@ -4,7 +4,7 @@
 
 Version 0.1.0 is a private preview in the upstream NOS1 / `.nonos` format. It contains the actual Chat ELF, signed manifest, publisher certificate and STARK trailer. The outer container is signed with Ed25519 and ML-DSA-65.
 
-It is installable only on a host that already trusts this certificate chain and attestation root. It is not currently certified for stock official NONOS images. The native installer is the authority; the release does not change trust policies or bypass verification.
+It requires a host that already trusts this certificate chain and attestation root. End-to-end installation is not yet validated. It is not currently certified for stock official NONOS images. The native installer is the authority; the release does not change trust policies or bypass verification.
 
 ## Build the package
 
@@ -46,7 +46,17 @@ The package host shares the development trust policy, so this test establishes c
 
 Host checks passed: package checksum, both publisher signatures, exact four-section roundtrip, certificate/manifest/ELF binding, rejection of eight damaged packages and a stale ELF. The official upstream trust policy rejects our private publisher certificate. Four Python tests cover the transfer disk layout, exact payload, overwrite protection and invalid/oversized inputs.
 
-Native installation, start, duplicate-install refusal, removal and persistence tests are being run on the separate package-host VM. Results will be recorded here when complete.
+Native validation is blocked, not passed. On the isolated 2 GiB package-host VM with automatic Chat spawn disabled:
+
+- A candidate package (SHA-256 `8e7b933191de287086c03a13f018ca1f5914acc457920365306f51552f355830`) passed the native admission query and displayed the expected private publisher namespace and capabilities.
+- Confirmed installation returned `pkg: store write failed`; the kernel logged `[STORE-WR] err`. No successful persistent installation or external application launch was established.
+- A kernel rebuilt with a more detailed store-error log subsequently returned `pkg: malformed package or path` before reaching the write path. The file remained visible with the expected 1,777,308-byte size. This reproduced with one or two staged files and with the earlier transfer disk, so a multiple-file explanation was not established.
+- The transfer helper now reserves the full 64-entry TOC region. A regression test verifies that rewriting that whole region cannot overwrite the downloaded package.
+- Native damaged-package rejection, duplicate-install refusal, removal, external launch and persistence after reboot remain unverified.
+
+The authenticated download is the original packaged preview (SHA-256 `3a375e2760d6a92da418b26b6dbea2e0fbc410e0d1269a5b742cbde3628a36e8`), not the later test-host candidate. Both passed host-side package validation. Neither is presented as a completed native installation.
+
+Production remained on its existing working Chat image; diagnostic builds were not deployed there. The next investigation is the native VFS/installer read path, followed by the kernel-mediated store-write path. Preserve the publisher, attestation and StoreWrite checks while resolving these failures.
 
 ## Official NONOS distribution
 

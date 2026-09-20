@@ -2,6 +2,10 @@
 
 NONOS Chat is a native x86_64 NONOS capsule. The download is a signed `.nonos` package, not a Linux program or an operating-system image.
 
+## Preview status
+
+This download is for development testing. End-to-end native installation is not yet validated: the isolated test host reached a successful admission query but failed to persist the package, and subsequent boots also reproduced a package-read failure. The commands below describe the intended workflow, not a completed installation test. Do not use this preview as a production installer.
+
 ## Compatibility first
 
 This preview is signed by the private publisher identity used for the NONOS Chat development image. The receiving NONOS kernel must trust its certificate chain and STARK attestation root. Matching the NONOS version alone is not enough.
