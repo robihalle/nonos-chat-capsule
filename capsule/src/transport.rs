@@ -95,8 +95,18 @@ impl Job {
                     }
                     self.flight.extend_from_slice(&b[..n]);
                 }
-                if nonos_tls::server_finished_flight_ready(&self.flight) {
+                if n > 0 && protocol::tls_records_complete(&self.flight) {
                     let cf = self.client.as_ref().ok_or("Invalid TLS state.")?;
+                    let Some(done) = nonos_tls::server_complete(
+                        cf,
+                        &self.flight,
+                        self.endpoint.host.as_bytes(),
+                        self.wall,
+                    ) else {
+                        // A record boundary is not proof of a complete handshake.
+                        // Keep waiting; never send credentials without verified Finished.
+                        return Ok(None);
+                    };
                     self.outgoing = nonos_tls::application_write(
                         cf,
                         &self.flight,
@@ -105,16 +115,7 @@ impl Job {
                         self.wall,
                     )
                     .ok_or("TLS certificate or handshake is invalid. The request was not sent.")?;
-                    self.keys = Some(
-                        nonos_tls::server_complete(
-                            cf,
-                            &self.flight,
-                            self.endpoint.host.as_bytes(),
-                            self.wall,
-                        )
-                        .ok_or("TLS server verification failed.")?
-                        .app,
-                    );
+                    self.keys = Some(done.app);
                     self.request.zeroize();
                     self.stage = 3;
                 }

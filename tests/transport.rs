@@ -38,7 +38,7 @@ pub fn client_flight(_: &[u8]) -> Option<flight::ClientFlight> {
     })
 }
 pub fn server_finished_flight_ready(bytes: &[u8]) -> bool {
-    bytes == b"verified server flight"
+    bytes == b"\x16\x03\x03\x00\x01\x00\x17\x03\x03\x00\x01\x00"
 }
 pub fn application_write(
     _: &flight::ClientFlight,
@@ -105,7 +105,7 @@ fn transient_empty_polls_do_not_abort_handshake_or_response() {
     queue(Err(()));
     assert!(j.poll().unwrap().is_none()); // temporary empty receive
     STATE.with(|s| assert_eq!(s.borrow().sent, vec![b"client hello".to_vec()]));
-    queue(Ok(b"verified server flight"));
+    queue(Ok(b"\x16\x03\x03\x00\x01\x00\x17\x03\x03\x00\x01\x00"));
     assert!(j.poll().unwrap().is_none());
     assert!(j.poll().unwrap().is_none()); // application request after verification
     queue(Err(()));
@@ -132,9 +132,21 @@ fn silent_response_still_times_out() {
     let mut j = job();
     j.poll().unwrap();
     j.poll().unwrap();
-    queue(Ok(b"verified server flight"));
+    queue(Ok(b"\x16\x03\x03\x00\x01\x00\x17\x03\x03\x00\x01\x00"));
     j.poll().unwrap();
     j.poll().unwrap();
     STATE.with(|s| s.borrow_mut().now = 90_001);
     assert_eq!(j.poll().err(), Some("Request timed out. Please try again."));
+}
+
+#[test]
+fn complete_records_without_verified_finished_never_send_credentials() {
+    let mut j = job();
+    j.poll().unwrap();
+    j.poll().unwrap();
+    queue(Ok(b"\x17\x03\x03\x00\x01\x00"));
+    assert!(j.poll().unwrap().is_none());
+    STATE.with(|s| assert_eq!(s.borrow().sent, vec![b"client hello".to_vec()]));
+    STATE.with(|s| s.borrow_mut().now = 20_001);
+    assert_eq!(j.poll().err(), Some("TLS handshake timed out."));
 }

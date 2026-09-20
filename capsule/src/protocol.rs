@@ -228,3 +228,20 @@ pub fn answer(r: Response, models: bool) -> Result<String, String> {
         .map(ToString::to_string)
         .ok_or("The model did not return a text response.".into())
 }
+
+/// Framing only: cryptographic Finished and certificate checks remain in nonos_tls.
+/// A server may combine all encrypted handshake messages into a single record.
+pub fn tls_records_complete(bytes: &[u8]) -> bool {
+    let mut pos = 0usize;
+    let mut encrypted = false;
+    while pos + 5 <= bytes.len() {
+        let size = u16::from_be_bytes([bytes[pos + 3], bytes[pos + 4]]) as usize;
+        let end = pos + 5 + size;
+        if end > bytes.len() {
+            return false;
+        }
+        encrypted |= bytes[pos] == 23;
+        pos = end;
+    }
+    encrypted && pos == bytes.len()
+}

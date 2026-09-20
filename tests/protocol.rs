@@ -100,3 +100,27 @@ mod tests {
 
 #[path = "../compat/virtqueue_layout.rs"]
 pub mod virtqueue_layout;
+
+#[cfg(test)]
+mod tls_framing_tests {
+    use super::protocol::tls_records_complete;
+    const FLIGHT: &[u8] = b"\x16\x03\x03\x00\x01\x00\x17\x03\x03\x00\x04abcd";
+    #[test]
+    fn accept_one_coalesced_encrypted_record() {
+        assert!(tls_records_complete(FLIGHT));
+    }
+    #[test]
+    fn reject_every_incomplete_prefix() {
+        for end in 0..FLIGHT.len() {
+            assert!(!tls_records_complete(&FLIGHT[..end]));
+        }
+    }
+    #[test]
+    fn reject_trailing_record_fragments() {
+        for tail in [&b"\x17"[..], &b"\x17\x03\x03\x00\x02x"[..]] {
+            let mut b = FLIGHT.to_vec();
+            b.extend_from_slice(tail);
+            assert!(!tls_records_complete(&b));
+        }
+    }
+}
