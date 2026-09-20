@@ -70,3 +70,10 @@ fn spawn_chat() -> Result<u32, SpawnError> {
     Err(SpawnError::FeatureDisabled)
 }
 ''')
+
+# Signed QEMU desktop with all graphical applications, without unrelated std CLI tools.
+(root/"mk/25-chat.mk").write_text("""\
+.PHONY: nonos-mk-chat-desktop-prod
+nonos-mk-chat-desktop-prod: $(DESKTOP_BASE_CAPSULE_ARTIFACTS) $(snake_ARTIFACTS) $(ZK_POLICY_ROOT) $(foreach s,$(NONOS_ENROLLED_CAPSULES),$($(s)_VERIFY)) nonos-mk-check-deps nonos-mk-ensure-signing-key
+\t$(call nonos_kernel_build,microkernel-desktop-base + nonos-stark-attest,microkernel-desktop-base$(_boot_comma)nonos-stark-attest)
+""")

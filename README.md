@@ -36,8 +36,10 @@ rustup toolchain install nightly-2026-01-16 --profile minimal --component rust-s
 scripts/build.sh "$PWD/build/microkernel"
 ```
 
-The integration script adds a separate `app.chat` capsule and boots it with the desktop.
-Existing applications remain present. Networking uses the upstream socket IPC and TLS implementation.
+The integration script adds a separate `app.chat` capsule and a **Chat** launcher entry.
+The image uses `microkernel-desktop-base` with the STARK admission gate: graphical applications,
+browser, terminal and network services remain present; optional std CLI tools are omitted.
+The final raw QEMU/USB image is `build/microkernel/target/nonos.img`. Networking uses the upstream socket IPC and TLS implementation.
 The build initializes a private image signing identity and enrolls the resulting capsule measurements.
 It does **not** disable manifest checks, TLS verification or STARK admission.
 Keep the upstream checkout's `.keys/` directory private. These keys identify this custom image,
