@@ -1,0 +1,22 @@
+[package]
+name = "nonos_chat"
+version = "0.1.0"
+edition = "2021"
+license = "AGPL-3.0-or-later"
+publish = false
+
+[[bin]]
+name = "chat"
+path = "src/main.rs"
+
+[dependencies]
+nonos_libc = { package = "nonos_userland_libc", path = "../libc" }
+nonos_app_skeleton = { path = "../app_skeleton" }
+nonos_tls = { path = "../nonos_tls" }
+serde_json = { version = "1", default-features = false, features = ["alloc"] }
+zeroize = { version = "1", default-features = false, features = ["alloc"] }
+
+[profile.release]
+panic = "abort"
+opt-level = 2
+strip = true

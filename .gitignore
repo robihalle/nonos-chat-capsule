@@ -1,0 +1,11 @@
+/build/
+/target/
+**/target/
+.env
+.env.*
+*.key
+*.seed
+.keys/
+*.img
+*.iso
+__pycache__/
