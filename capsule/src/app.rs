@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
-use alloc::{string::{String,ToString},vec::Vec,format};
+use alloc::{string::String,vec::Vec};
 use nonos_app_skeleton::{App,AppManifest,WindowKind,InputEvent,InputKind,EventOutcome,PaintBuffer,KEY_TAB,KEY_ENTER,KEY_BACKSPACE,KEY_ESC,KEY_UP,KEY_DOWN,MOD_CTRL,MOD_SHIFT,clipboard_paste};
 use zeroize::Zeroize;
 use crate::{protocol::{self,Endpoint,Message},transport::Job};

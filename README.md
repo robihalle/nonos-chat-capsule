@@ -3,7 +3,7 @@
 Native Rust chat application for NONOS, with a configurable OpenAI-compatible HTTPS API.
 This repository is an application overlay for a pinned NONOS microkernel checkout, not a Linux web application.
 
-**Status:** initial implementation; protocol tests pass. Native image build and VM integration are in progress.
+**Status:** native capsule compiles (1.4 MiB ELF) and passes the declared-capability check; all 10 protocol tests pass locally and in GitHub Actions. Complete image build and VM integration are in progress.
 Do not interpret a successful host test as evidence of a working guest network or a completed model request.
 
 ## First version

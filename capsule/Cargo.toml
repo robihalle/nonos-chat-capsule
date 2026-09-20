@@ -16,6 +16,8 @@ nonos_tls = { path = "../nonos_tls" }
 serde_json = { version = "1", default-features = false, features = ["alloc"] }
 zeroize = { version = "1", default-features = false, features = ["alloc"] }
 
+spin = { version = "0.9", default-features = false, features = ["mutex", "spin_mutex"] }
+
 [profile.release]
 panic = "abort"
 opt-level = 2
