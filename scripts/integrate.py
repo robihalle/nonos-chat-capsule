@@ -49,3 +49,24 @@ s=s.replace("include nonos-mk/capsule.mk",'''CAPSULE_INSTANCE_ENDPOINTS := servi
 include nonos-mk/capsule.mk''')
 p.write_text(s)
 print("Chat capsule integrated. Signatures and STARK admission remain enforced.")
+
+# Add a launcher entry and the same verified instance-spawn path used by other apps.
+change(Path("userland/capsule_desktop_shell/src/state/apps.rs"),
+       "pub const LAUNCHER_APPS: [LauncherApp; 12] = [",
+       'pub const LAUNCHER_APPS: [LauncherApp; 13] = [\n    LauncherApp { icon: LauncherIcon::TextEditor, label: b"Chat", service: b"app.chat" },')
+change(Path("src/userspace/init/instance_spawn/queue.rs"),"    Browser,","    Browser,\n    Chat,")
+change(Path("src/userspace/init/instance_spawn/queue.rs"),'            PendingApp::Browser => b"app.browser",','            PendingApp::Browser => b"app.browser",\n            PendingApp::Chat => b"app.chat",')
+change(Path("src/syscall/microkernel/spawn_instance.rs"),'        "app.browser" => PendingApp::Browser,','        "app.browser" => PendingApp::Browser,\n        "app.chat" => PendingApp::Chat,')
+change(Path("src/userspace/init/instance_spawn/service.rs"),"            PendingApp::Browser => spawn_browser(),","            PendingApp::Browser => spawn_browser(),\n            PendingApp::Chat => spawn_chat(),")
+service=root/"src/userspace/init/instance_spawn/service.rs"
+if "fn spawn_chat()" not in service.read_text():
+ with service.open("a") as f:f.write('''
+#[cfg(feature = "nonos-capsule-chat")]
+fn spawn_chat() -> Result<u32, SpawnError> {
+    crate::userspace::capsule_chat::spawn_chat_instance()
+}
+#[cfg(not(feature = "nonos-capsule-chat"))]
+fn spawn_chat() -> Result<u32, SpawnError> {
+    Err(SpawnError::FeatureDisabled)
+}
+''')
