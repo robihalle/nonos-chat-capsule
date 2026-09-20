@@ -3,8 +3,7 @@
 Native Rust chat application for NONOS, with a configurable OpenAI-compatible HTTPS API.
 This repository is an application overlay for a pinned NONOS microkernel checkout, not a Linux web application.
 
-**Status:** the signed image builds, passes all image checks, and boots the native Chat window in QEMU. All 14 protocol and VirtIO geometry tests pass locally and in GitHub Actions. Guest DNS/TCP works; end-to-end TLS and model response verification is in progress.
-Do not interpret a successful host test as evidence of a working guest network or a completed model request.
+**Status:** the signed image builds, passes all image checks, and boots the native Chat window in QEMU. All 21 protocol, transport and VirtIO geometry tests pass locally and in GitHub Actions. A native guest request completes verified TLS and receives an OpenRouter HTTP response. A successful model completion is not yet verified: the account's shared free-model daily quota was exhausted during validation (HTTP 429). See [validation notes](docs/VALIDATION.md).
 
 ## First version
 - Native NONOS window, configuration fields and scrolling conversation.
@@ -56,8 +55,10 @@ not an official NONOS release.
 cargo +nightly-2026-01-16 test --manifest-path tests/Cargo.toml
 ```
 Tests cover UTF-8 and JSON serialization, custom base paths, request injection,
-fragmented fixed-length and chunked HTTP, size limits, API errors, model lists, and
-legacy VirtIO queue alignment, bounds and device-reported queue sizes.
+fragmented fixed-length and chunked HTTP, size limits, API errors, model lists,
+coalesced TLS handshake records, transient empty receives, transport deadlines,
+credential release only after TLS verification, and legacy VirtIO queue alignment,
+bounds and device-reported queue sizes.
 
 ## Current limits
 - No streaming, tool execution, attachments, persistent key vault or saved chat history.
@@ -67,7 +68,7 @@ legacy VirtIO queue alignment, bounds and device-reported queue sizes.
 - Up to 256 KiB of response data; 180-second total request deadline.
 - Text entry follows the current NONOS keyboard translation; clipboard paste supports UTF-8.
 - The GUI network state machine is cancellable between polls; upstream DNS/TCP IPC can block briefly.
-- NONOS itself is prerelease software. Guest network and TLS interoperability require VM verification.
+- NONOS itself is prerelease software. Provider interoperability must be verified in the guest; host tests alone are insufficient.
 
 ## Layout
 - `capsule/`: native application, protocol and transport.
