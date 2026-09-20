@@ -11,3 +11,5 @@ jobs:
         run: rustup toolchain install nightly-2026-01-16 --profile minimal
       - name: Test protocol
         run: cargo +nightly-2026-01-16 test --manifest-path tests/Cargo.toml --locked
+      - name: Test package transfer disk
+        run: python3 -m unittest discover -s tests -p 'test_*.py' -v

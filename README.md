@@ -32,6 +32,11 @@ The [Free Models Router](https://openrouter.ai/openrouter/free/) selects from av
 Enter a dedicated OpenRouter API key in the masked field. No credential belongs in source control or the image.
 Free-model rate limits and availability still apply. Entering the model ID manually avoids downloading a large provider-wide model catalog.
 
+## Downloadable capsule package
+A signed `.nonos` preview package can be built from the existing artifacts using `scripts/package.py`.
+Read [installation instructions](docs/INSTALL.md) and [package compatibility and validation](docs/PACKAGING.md).
+This preview requires the development host's publisher trust chain and attestation root; it is not yet a stock official NONOS release.
+
 ## Build on Linux
 Dependencies: git, Rustup, C/C++ toolchain, clang/lld, pkg-config, libssl-dev,
 QEMU, OVMF, swtpm, mtools, gdisk, xorriso, nasm and Python 3.
