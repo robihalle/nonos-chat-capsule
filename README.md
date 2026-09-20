@@ -3,7 +3,7 @@
 Native Rust chat application for NONOS, with a configurable OpenAI-compatible HTTPS API.
 This repository is an application overlay for a pinned NONOS microkernel checkout, not a Linux web application.
 
-**Status:** the signed image builds, passes all image checks, and boots the native Chat window in QEMU. All 21 protocol, transport and VirtIO geometry tests pass locally and in GitHub Actions. A native guest request completes verified TLS and receives an OpenRouter HTTP response. A successful model completion is not yet verified: the account's shared free-model daily quota was exhausted during validation (HTTP 429). See [validation notes](docs/VALIDATION.md).
+**Status:** the signed image builds, passes all image checks, and boots the native Chat window in QEMU. All 21 protocol, transport and VirtIO geometry tests pass locally and in GitHub Actions. A native guest request completes verified TLS and receives a successful model answer from Groq using `openai/gpt-oss-20b` on the Free Plan. OpenRouter also reaches the API but the tested account's daily free quota was exhausted. See [validation notes](docs/VALIDATION.md).
 
 ## First version
 - Native NONOS window, configuration fields and scrolling conversation.
@@ -19,6 +19,12 @@ Use **Test connection** to list models, then enter one in **Model**.
 A provider without a models endpoint can still be used by entering its model ID manually.
 Use Tab to switch fields, Ctrl+A to replace a field, Enter to send, Shift+Enter for a newline.
 Ctrl+V uses the NONOS clipboard, which is separate from the browser clipboard.
+
+## Groq Free Plan
+The deployed session is configured with API URL `https://api.groq.com/openai/v1` and model `openai/gpt-oss-20b`.
+Create a dedicated key in your own [Groq account](https://console.groq.com/keys) and keep the account on the Free Plan.
+A native NONOS request returned a successful assistant answer with these settings. Free Plan rate limits still apply.
+The key and configuration are session-only; credentials are not included in this repository or the image.
 
 ## OpenRouter free models
 Use `https://openrouter.ai/api/v1` as the API URL and `openrouter/free` as the model ID.
