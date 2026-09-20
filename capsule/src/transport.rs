@@ -85,8 +85,9 @@ impl Job {
                     return Err("TLS handshake timed out.");
                 }
                 let mut b = [0u8; 4096];
-                let n = net::socket_recv(self.port, self.handle, &mut b)
-                    .map_err(|_| "Network error during TLS handshake.")?;
+                // The upstream socket adapter also returns Err for a transient empty poll.
+                // Match the browser transport: retry within the idle/total deadlines.
+                let n = net::socket_recv(self.port, self.handle, &mut b).unwrap_or(0);
                 if n > 0 {
                     self.last_data = now;
                     if self.flight.len() + n > 128 * 1024 {
@@ -120,8 +121,7 @@ impl Job {
             }
             4 => {
                 let mut b = [0u8; 4096];
-                let n = net::socket_recv(self.port, self.handle, &mut b)
-                    .map_err(|_| "Network error while receiving.")?;
+                let n = net::socket_recv(self.port, self.handle, &mut b).unwrap_or(0);
                 if n > 0 {
                     self.last_data = now;
                     if self.encrypted.len() + n > MAX_RESPONSE + 32768 {

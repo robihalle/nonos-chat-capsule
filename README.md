@@ -3,7 +3,7 @@
 Native Rust chat application for NONOS, with a configurable OpenAI-compatible HTTPS API.
 This repository is an application overlay for a pinned NONOS microkernel checkout, not a Linux web application.
 
-**Status:** native capsule compiles (1.4 MiB ELF) and passes the declared-capability check; all 10 protocol tests pass locally and in GitHub Actions. Complete image build and VM integration are in progress.
+**Status:** the signed image builds, passes all image checks, and boots the native Chat window in QEMU. All 14 protocol and VirtIO geometry tests pass locally and in GitHub Actions. Guest DNS/TCP works; end-to-end TLS and model response verification is in progress.
 Do not interpret a successful host test as evidence of a working guest network or a completed model request.
 
 ## First version
@@ -20,6 +20,12 @@ Use **Test connection** to list models, then enter one in **Model**.
 A provider without a models endpoint can still be used by entering its model ID manually.
 Use Tab to switch fields, Ctrl+A to replace a field, Enter to send, Shift+Enter for a newline.
 Ctrl+V uses the NONOS clipboard, which is separate from the browser clipboard.
+
+## OpenRouter free models
+Use `https://openrouter.ai/api/v1` as the API URL and `openrouter/free` as the model ID.
+The [Free Models Router](https://openrouter.ai/openrouter/free/) selects from available free models.
+Enter a dedicated OpenRouter API key in the masked field. No credential belongs in source control or the image.
+Free-model rate limits and availability still apply. Entering the model ID manually avoids downloading a large provider-wide model catalog.
 
 ## Build on Linux
 Dependencies: git, Rustup, C/C++ toolchain, clang/lld, pkg-config, libssl-dev,
@@ -50,7 +56,8 @@ not an official NONOS release.
 cargo +nightly-2026-01-16 test --manifest-path tests/Cargo.toml
 ```
 Tests cover UTF-8 and JSON serialization, custom base paths, request injection,
-fragmented fixed-length and chunked HTTP, size limits, API errors and model lists.
+fragmented fixed-length and chunked HTTP, size limits, API errors, model lists, and
+legacy VirtIO queue alignment, bounds and device-reported queue sizes.
 
 ## Current limits
 - No streaming, tool execution, attachments, persistent key vault or saved chat history.
@@ -75,6 +82,6 @@ Upstream: https://github.com/NON-OS/microkernel
 
 ## VirtIO compatibility
 The overlay adapts the legacy block and network drivers to device-reported queues up to 1024 entries.
-QEMU 10.0.13 forces 1024 entries even when smaller queue properties are requested.
+[QEMU 10.0.13](https://github.com/qemu/qemu/blob/v10.0.13/hw/virtio/virtio.c) forces 1024 entries even when smaller queue properties are requested.
 Network ring offsets and wrapping use the physical queue size; the posted buffer pool stays bounded.
 The compatibility geometry is covered by host tests. No guest isolation or admission checks are disabled.
