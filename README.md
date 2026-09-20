@@ -72,3 +72,9 @@ fragmented fixed-length and chunked HTTP, size limits, API errors and model list
 AGPL-3.0-or-later. Integration reuses NONOS socket adapters, keymap and kernel capsule mirror
 with their existing copyright notices.
 Upstream: https://github.com/NON-OS/microkernel
+
+## VirtIO compatibility
+The overlay adapts the legacy block and network drivers to device-reported queues up to 1024 entries.
+QEMU 10.0.13 forces 1024 entries even when smaller queue properties are requested.
+Network ring offsets and wrapping use the physical queue size; the posted buffer pool stays bounded.
+The compatibility geometry is covered by host tests. No guest isolation or admission checks are disabled.

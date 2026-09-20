@@ -97,3 +97,6 @@ mod tests {
         assert!(answer(r, true).unwrap().contains("test-model"));
     }
 }
+
+#[path = "../compat/virtqueue_layout.rs"]
+pub mod virtqueue_layout;

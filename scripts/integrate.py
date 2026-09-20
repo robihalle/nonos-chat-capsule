@@ -77,3 +77,5 @@ fn spawn_chat() -> Result<u32, SpawnError> {
 nonos-mk-chat-desktop-prod: $(DESKTOP_BASE_CAPSULE_ARTIFACTS) $(snake_ARTIFACTS) $(ZK_POLICY_ROOT) $(foreach s,$(NONOS_ENROLLED_CAPSULES),$($(s)_VERIFY)) nonos-mk-check-deps nonos-mk-ensure-signing-key
 \t$(call nonos_kernel_build,microkernel-desktop-base + nonos-stark-attest,microkernel-desktop-base$(_boot_comma)nonos-stark-attest)
 """)
+
+subprocess.run([sys.executable,str(repo/"scripts/virtio-compat.py"),str(root)],check=True)
