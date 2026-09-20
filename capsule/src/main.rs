@@ -3,10 +3,10 @@
 #![no_main]
 extern crate alloc;
 mod app;
+mod keymap;
+mod net;
 mod protocol;
 mod transport;
-mod net;
-mod keymap;
 #[used]
 #[link_section = ".nonos.caps"]
 static CAPS: u64 = 0x183d;

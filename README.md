@@ -16,7 +16,7 @@ Do not interpret a successful host test as evidence of a working guest network o
 
 Enter a complete versioned base URL such as `https://api.openai.com/v1`.
 A different compatible provider may require a different prefix and model ID.
-Use **Verbindung testen** to list models, then enter one in **Modell**.
+Use **Test connection** to list models, then enter one in **Model**.
 A provider without a models endpoint can still be used by entering its model ID manually.
 Use Tab to switch fields, Ctrl+A to replace a field, Enter to send, Shift+Enter for a newline.
 Ctrl+V uses the NONOS clipboard, which is separate from the browser clipboard.
