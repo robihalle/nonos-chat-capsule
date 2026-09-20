@@ -10,11 +10,13 @@ The release metadata records the pinned upstream revision and SHA-256 fingerprin
 
 Do not disable verification or replace your system trust root just to install this package. A package rejected with an access error needs a compatible, explicitly trusted publisher release.
 
+Use at least 2 GiB of guest RAM for the full desktop profile tested here. Smaller test guests could boot the desktop but failed to open application windows.
+
 The receiving system needs the installer, VFS package store, terminal/desktop package UI, network, TLS, toolkit, window manager and compositor services. The install name `chat` and service `app.chat` must be available.
 
 ## Download and verify
 
-Download `nonos-chat-0.1.0.nonos`, `release.json` and `SHA256SUMS` from the same authenticated release location. Repository access is required while the project is private.
+Download `nonos-chat-0.1.0.nonos`, `release.json` and `SHA256SUMS` from the same authenticated release location. Access to the private release location is required. The same location provides the corresponding source overlay and build scripts.
 
 On your host computer, compare the package SHA-256 with `release.json`. With the pinned upstream host tools you can additionally run:
 

@@ -27,6 +27,13 @@ class TransferDiskTests(unittest.TestCase):
                 self.assertEqual(f.read(96).rstrip(b"\0"), b"/pkgs/chat.nonos")
                 offset, length = struct.unpack("<QQ", f.read(16))
                 self.assertEqual(offset % 512, 0)
+                self.assertGreaterEqual(offset, disk.BASE + disk.TOC_SIZE)
+                f.seek(offset)
+                self.assertEqual(f.read(length), body)
+            # Simulate a full native TOC rewrite after installing more capsules.
+            with out.open("r+b") as f:
+                f.seek(disk.BASE)
+                f.write(bytes(disk.TOC_SIZE))
                 f.seek(offset)
                 self.assertEqual(f.read(length), body)
 

@@ -14,6 +14,8 @@ import struct
 BASE = 256 * 512
 DISK_SIZE = 128 * 1024 * 1024
 MAX_PACKAGE = 16 * 1024 * 1024
+# Reserve all 64 native TOC slots so subsequent installs cannot overwrite the package.
+TOC_SIZE = ((32 + 128 * 64 + 511) // 512) * 512
 
 
 def stage(package, output):
@@ -29,7 +31,7 @@ def stage(package, output):
     body = package.read_bytes()
     if body[:4] != b"NOS1":
         raise ValueError("Not an upstream NOS1 package.")
-    offset = BASE + 512
+    offset = BASE + TOC_SIZE
     header = b"NONOSTR1" + struct.pack("<II", 1, 1) + bytes(16)
     entry = name.ljust(96, b"\0") + struct.pack("<QQ", offset, len(body)) + bytes(16)
     # Exclusive create prevents an existing disk, file or symlink from being overwritten.
