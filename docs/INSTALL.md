@@ -40,8 +40,9 @@ Then confirm installation:
 
 ```text
 nox pkg install /pkgs/nonos-chat-0.1.0.nonos --yes
-nox install chat
 ```
+
+Open Launchpad and select **chat** in the installed applications section. This asks the installer to load the verified capsule and sends the focus event that opens its window. The terminal command `nox install chat` loads the service, but the graphical app may still wait for that focus event.
 
 The desktop also discovers `.nonos` files in `/pkgs` and provides an installation consent dialog. GUI and persistence validation status is recorded in `docs/PACKAGING.md`.
 

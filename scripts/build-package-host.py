@@ -33,7 +33,7 @@ else:
     text = text.replace("[features]\n", "[features]\n" + definition, 1)
     cargo.write_text(text)
 mk = """.PHONY: chat-package-host
-chat-package-host:
+chat-package-host: $(DESKTOP_BASE_CAPSULE_ARTIFACTS) $(snake_ARTIFACTS) $(ZK_POLICY_ROOT) $(foreach s,$(NONOS_ENROLLED_CAPSULES),$($(s)_VERIFY)) nonos-mk-check-deps nonos-mk-ensure-signing-key
 \t$(call nonos_kernel_build,Chat package host,microkernel-chat-package-host$(_boot_comma)nonos-stark-attest)
 """
 env = dict(os.environ, CARGO_BUILD_JOBS="1")
